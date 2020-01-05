@@ -86,7 +86,7 @@ class VideoFormat:
         return self.__str__()
 
 
-class Videotrack:
+class VideoClipItem:
     def __init__(self, element=None):
         self.masterclipid = None
         self.name = None
@@ -170,6 +170,34 @@ class Videotrack:
         return self.__str__()
 
 
+class VideoTrack:
+    def __init__(self, element=None):
+        self.clipitems = []
+        self.enabled = None
+        self.locked = None
+        self.fields = ['clipitem', 'enabled', 'locked']
+        if element is not None:
+            self.parser(element)
+
+    def parser(self, element):
+        for element_child in element:
+            if element_child.tag == 'clipitem':
+                self.clipitems.append(VideoClipItem(element_child))
+            elif element_child.tag == 'enabled':
+                self.enabled = element_child.text
+            elif element_child.tag == 'locked':
+                self.locked = element_child.text
+            else:
+                print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
+                      element_child.text)
+
+    def __str__(self):
+        return type(self).__name__ + " ,".join([f"({f}: {getattr(self, f, None)})" for f in self.fields])
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Video:
     def __init__(self, element=None):
         self.format = None
@@ -183,8 +211,7 @@ class Video:
             if element_child.tag == 'format':
                 self.format = VideoFormat(element_child)
             elif element_child.tag == 'track':
-                for track in element_child:
-                    self.tracks.append(Videotrack(track))
+                self.tracks.append(VideoTrack(element_child))
             else:
                 print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
                       element_child.text)
