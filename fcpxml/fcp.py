@@ -2,7 +2,7 @@ from pprint import pprint as pp
 
 import xml.etree.ElementTree as ET
 
-from fcpxml1.utils import _generate_fields
+from .utils import _generate_fields
 
 media_tree = ['video', 'audio', ]
 

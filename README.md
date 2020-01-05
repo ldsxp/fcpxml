@@ -2,6 +2,8 @@
 
 **fcpxml** 解析 Final Cut Pro 导出的 xml 文件（现在开发是以  Premiere Pro 导出的 XML 项目文件为基础）
 
+**请不要安装，现在还不可用！！！**
+
 查看 [更改日志](https://github.com/ldsxp/fcpxml/blob/master/CHANGELOG.md)
 
 ## 安装：
