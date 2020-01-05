@@ -9,4 +9,5 @@ def _generate_fields(element):
     print('-' * 70)
     print("\n".join(l))
     print("\n".join(ll))
+    print(f"self.fields = {[element_child.tag for element_child in element]}")
     print('=' * 70)
