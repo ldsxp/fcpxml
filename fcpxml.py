@@ -1,4 +1,8 @@
+from pprint import pprint as pp
+
 import xml.etree.ElementTree as ET
+
+from fcpxml1.utils import _generate_fields
 
 media_tree = ['video', 'audio', ]
 
@@ -59,6 +63,139 @@ class Timecode:
         return self.__str__()
 
 
+class VideoFormat:
+    def __init__(self, element=None):
+        self.samplecharacteristics = None
+        self.fields = ['samplecharacteristics', ]
+        if element is not None:
+            self.parser(element)
+
+    def parser(self, element):
+        for element_child in element:
+            if element_child.tag == 'samplecharacteristics':
+                # self.samplecharacteristics = VideoSampleCharacTeristics(element_child)
+                print('我们先不处理格式信息 VideoSampleCharacTeristics')
+            else:
+                print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
+                      element_child.text)
+
+    def __str__(self):
+        return type(self).__name__ + " ,".join([f"({f}: {getattr(self, f, None)})" for f in self.fields])
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class Videotrack:
+    def __init__(self, element=None):
+        self.masterclipid = None
+        self.name = None
+        self.enabled = None
+        self.duration = None
+        self.rate = None
+        self.start = None
+        self.end = None
+        self.in_ = None
+        self.out = None
+        self.pproTicksIn = None
+        self.pproTicksOut = None
+        self.alphatype = None
+        self.pixelaspectratio = None
+        self.anamorphic = None
+        self.file = None
+        self.logginginfo = None
+        self.colorinfo = None
+        self.labels = None
+        self.links = []
+        self.fields = ['masterclipid', 'name', 'enabled', 'duration', 'rate', 'start', 'end', 'in', 'out',
+                       'pproTicksIn', 'pproTicksOut', 'alphatype', 'pixelaspectratio', 'anamorphic', 'file', 'links',
+                       'logginginfo', 'colorinfo', 'labels']
+
+        if element is not None:
+            self.parser(element)
+
+    def parser(self, element):
+        for element_child in element:
+            if element_child.tag == 'masterclipid':
+                self.masterclipid = element_child.text
+            elif element_child.tag == 'name':
+                self.name = element_child.text
+            elif element_child.tag == 'enabled':
+                self.enabled = element_child.text
+            elif element_child.tag == 'duration':
+                self.duration = element_child.text
+            elif element_child.tag == 'rate':
+                self.rate = Rate(element_child)
+            elif element_child.tag == 'start':
+                self.start = element_child.text
+            elif element_child.tag == 'end':
+                self.end = element_child.text
+            elif element_child.tag == 'in':
+                self.in_ = element_child.text
+            elif element_child.tag == 'out':
+                self.out = element_child.text
+            elif element_child.tag == 'pproTicksIn':
+                self.pproTicksIn = element_child.text
+            elif element_child.tag == 'pproTicksOut':
+                self.pproTicksOut = element_child.text
+            elif element_child.tag == 'alphatype':
+                self.alphatype = element_child.text
+            elif element_child.tag == 'pixelaspectratio':
+                self.pixelaspectratio = element_child.text
+            elif element_child.tag == 'anamorphic':
+                self.anamorphic = element_child.text
+            elif element_child.tag == 'file':
+                # self.file = element_child.text
+                print('需要处理 file')
+            elif element_child.tag == 'logginginfo':
+                # self.logginginfo = element_child.text
+                print('需要处理 logginginfo')
+            elif element_child.tag == 'colorinfo':
+                # self.colorinfo = element_child.text
+                print('需要处理 colorinfo')
+            elif element_child.tag == 'labels':
+                self.labels = element_child.text
+            elif element_child.tag == 'link':
+                for link in element_child:
+                    self.links.append(link)
+                print('需要处理 link')
+            else:
+                print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
+                      element_child.text)
+
+    def __str__(self):
+        return type(self).__name__ + " ,".join([f"({f}: {getattr(self, f, None)})" for f in self.fields])
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class Video:
+    def __init__(self, element=None):
+        self.format = None
+        self.tracks = []
+        self.fields = ['format', 'tracks', ]
+        if element is not None:
+            self.parser(element)
+
+    def parser(self, element):
+        for element_child in element:
+            if element_child.tag == 'format':
+                self.format = VideoFormat(element_child)
+            elif element_child.tag == 'track':
+                for track in element_child:
+                    self.tracks.append(Videotrack(track))
+            else:
+                print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
+                      element_child.text)
+
+    def __str__(self):
+        return type(self).__name__ + " ,".join([f"({f}: {getattr(self, f, None)})" for f in self.fields])
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Media:
     def __init__(self, element=None):
         self.string = None
@@ -71,7 +208,7 @@ class Media:
     def parser(self, element):
         for element_child in element:
             if element_child.tag == 'video':
-                self.video = element_child
+                self.video = Video(element_child)
             elif element_child.tag == 'audio':
                 self.audio = element_child
             else:
