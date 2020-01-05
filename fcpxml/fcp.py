@@ -156,8 +156,7 @@ class VideoClipItem:
             elif element_child.tag == 'labels':
                 self.labels = element_child.text
             elif element_child.tag == 'link':
-                for link in element_child:
-                    self.links.append(link)
+                self.links.append(element_child)
                 print('需要处理 link')
             else:
                 print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
