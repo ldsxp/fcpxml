@@ -59,15 +59,42 @@ class Timecode:
         return self.__str__()
 
 
+class Media:
+    def __init__(self, element=None):
+        self.string = None
+        self.video = None
+        self.audio = None
+        self.fields = ['video', 'audio', ]
+        if element is not None:
+            self.parser(element)
+
+    def parser(self, element):
+        for element_child in element:
+            if element_child.tag == 'video':
+                self.video = element_child
+            elif element_child.tag == 'audio':
+                self.audio = element_child
+            else:
+                print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
+                      element_child.text)
+
+    def __str__(self):
+        return type(self).__name__ + " ,".join([f"({f}: {getattr(self, f, None)})" for f in self.fields])
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Sequence:
     def __init__(self, element=None):
         self.uuid = None
         self.name = None
         self.duration = None
-        self.fields = ['uuid', 'duration', 'name', 'rate', 'timecode', ]
-        self.fields_tree = ['media', 'labels', ]
+        self.fields = ['uuid', 'duration', 'name', 'rate', 'timecode', 'media', ]
+        self.fields_tree = ['labels', ]
         self.rate = None
         self.timecode = None
+        self.media = None
         self.attrib = {}
         if element is not None:
             self.parser(element)
@@ -84,12 +111,7 @@ class Sequence:
             elif element_child.tag == 'rate':  # tree
                 self.rate = Rate(element_child)
             elif element_child.tag == 'media':  # tree
-                for media in element_child:
-                    if media.tag in media_tree:
-                        ...
-                        # print(f'media 标签:{media.tag}',media.text)
-                    else:
-                        print(f'未知内容(media): 标签:{media.tag}', media.text)
+                self.media = Media(element_child)
             elif element_child.tag == 'timecode':  # tree
                 self.timecode = Timecode(element_child)
             else:
