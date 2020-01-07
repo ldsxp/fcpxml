@@ -63,6 +63,42 @@ class Timecode:
         return self.__str__()
 
 
+class File:
+    def __init__(self, element=None):
+        self.name = None
+        self.pathurl = None
+        self.rate = None
+        self.timecode = None
+        self.media = None
+        self.fields = ['name', 'pathurl', 'rate', 'timecode', 'media']
+
+        if element is not None:
+            self.parser(element)
+
+    def parser(self, element):
+        for element_child in element:
+            if element_child.tag == 'name':  # text
+                self.name = element_child.text
+            elif element_child.tag == 'pathurl':  # text
+                self.pathurl = element_child.text
+            elif element_child.tag == 'rate':
+                self.rate = Rate(element_child)
+            elif element_child.tag == 'timecode':
+                self.timecode = Timecode(element_child)
+            elif element_child.tag == 'media':
+                self.media = element_child.text
+                print('我们先不处理格式信息 File self.media')
+            else:
+                print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
+                      element_child.text)
+
+    def __str__(self):
+        return type(self).__name__ + " ,".join([f"({f}: {getattr(self, f, None)})" for f in self.fields])
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class VideoFormat:
     def __init__(self, element=None):
         self.samplecharacteristics = None
@@ -145,8 +181,7 @@ class VideoClipItem:
             elif element_child.tag == 'anamorphic':
                 self.anamorphic = element_child.text
             elif element_child.tag == 'file':
-                # self.file = element_child.text
-                print('需要处理 file')
+                self.file = File(element_child)
             elif element_child.tag == 'logginginfo':
                 # self.logginginfo = element_child.text
                 print('需要处理 logginginfo')
@@ -157,6 +192,7 @@ class VideoClipItem:
                 self.labels = element_child.text
             elif element_child.tag == 'link':
                 self.links.append(element_child)
+                # _generate_fields(element_child)
                 print('需要处理 link')
             else:
                 print(f'未知内容({type(self).__name__}):{element_child} 标签:{element_child.tag} {type(element_child)}',
